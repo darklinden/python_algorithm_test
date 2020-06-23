@@ -1,2 +1,4 @@
 *.pyc
 git*
+.pytest_cache
+__pycache__
