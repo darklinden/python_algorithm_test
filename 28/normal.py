@@ -1,65 +1,54 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# question: 给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从 0 开始)。如果不存在，则返回 -1。
-
-import timeit
+from base import Solution
 
 
-def strStr(haystack: str, needle: str) -> int:
+class Normal(Solution):
 
-    if len(needle) == 0:
-        return 0
+    def algorithm_func(self, haystack: str, needle: str) -> int:
+        if len(needle) == 0:
+            return 0
 
-    i = 0
-    j = 0
+        i = 0
+        j = 0
 
-    for i in range(len(haystack) - len(needle) + 1):
-        match = True
-        for j in range(len(needle)):
-            # print('haystack ' + str(i + j) + ' ' + haystack[i + j])
-            # print('needle ' + str(j) + ' ' + needle[j])
-            if haystack[i + j] != needle[j]:
-                match = False
-                break
+        for i in range(len(haystack) - len(needle) + 1):
+            match = True
+            for j in range(len(needle)):
+                # print('haystack ' + str(i + j) + ' ' + haystack[i + j])
+                # print('needle ' + str(j) + ' ' + needle[j])
+                if haystack[i + j] != needle[j]:
+                    match = False
+                    break
 
-        # 判断字符串长度是否相等
-        if match:
-            return i
+            # 判断字符串长度是否相等
+            if match:
+                return i
 
-    return -1
-
-
-def test_strStr(haystack: str, needle: str, expectVal: int, comment: str = ''):
-
-    print('test_strStr begin')
-    if len(comment):
-        print(comment)
-    print('haystack: ' + haystack)
-    print('needle: ' + needle)
-    print('expect: ' + str(expectVal))
-
-    retVal = strStr(haystack, needle)
-    assert retVal == expectVal
-
-    command = 'strStr("' + haystack + '", "' + needle + '")'
-    print('run timeit command: ' + command)
-    t = timeit.timeit(command, globals=globals(), number=1)
-    print('cost time: {0:.10f}'.format(t))
-
-    print('return: ' + str(retVal))
-
-    print('test_strStr end')
-    print('')
+        return -1
 
 
 def main():
+    x = Normal()
 
-    test_strStr('1234567893450', '345', 2, '无重复')
+    x.test(
+        {'haystack': '1234567893450', 'needle': '345'},
+        {'ret_val': 2},
+        '无重复'
+    )
 
-    test_strStr('123434134343434134341', '34341', 2, '有重复')
+    x.test(
+        {'haystack': '123434134343434134341', 'needle': '34341'},
+        {'ret_val': 2},
+        '有重复'
+    )
 
-    test_strStr('asfeqewqfewqfewqffds', '34341', -1, '不存在')
+    x.test(
+        {'haystack': 'asfeqewqfewqfewqffds', 'needle': '34341'},
+        {'ret_val': -1},
+        '不存在'
+    )
 
 
 if __name__ == "__main__":
