@@ -1,24 +1,76 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from api import Api
-from base import Compare
-from binary_cut import BinaryCut
-from leetcode import LeetCode
+
+from base import Solution
+
+
+class LeetCode(Solution):
+
+    # 作者：LeetCode - Solution
+    # 链接：https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/xun-zhao-liang-ge-you-xu-shu-zu-de-zhong-wei-s-114/
+    # 来源：力扣（LeetCode）
+    # 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+    def algorithm_func(self, nums1: list, nums2: list) -> float:
+        def getKthElement(k):
+            """
+            - 主要思路：要找到第 k (k>1) 小的元素，那么就取 pivot1 = nums1[k/2-1] 和 pivot2 = nums2[k/2-1] 进行比较
+            - 这里的 "/" 表示整除
+            - nums1 中小于等于 pivot1 的元素有 nums1[0 .. k/2-2] 共计 k/2-1 个
+            - nums2 中小于等于 pivot2 的元素有 nums2[0 .. k/2-2] 共计 k/2-1 个
+            - 取 pivot = min(pivot1, pivot2)，两个数组中小于等于 pivot 的元素共计不会超过 (k/2-1) + (k/2-1) <= k-2 个
+            - 这样 pivot 本身最大也只能是第 k-1 小的元素
+            - 如果 pivot = pivot1，那么 nums1[0 .. k/2-1] 都不可能是第 k 小的元素。把这些元素全部 "删除"，剩下的作为新的 nums1 数组
+            - 如果 pivot = pivot2，那么 nums2[0 .. k/2-1] 都不可能是第 k 小的元素。把这些元素全部 "删除"，剩下的作为新的 nums2 数组
+            - 由于我们 "删除" 了一些元素（这些元素都比第 k 小的元素要小），因此需要修改 k 的值，减去删除的数的个数
+            """
+
+            index1, index2 = 0, 0
+            while True:
+                # 特殊情况
+                if index1 == m:
+                    return nums2[index2 + k - 1]
+                if index2 == n:
+                    return nums1[index1 + k - 1]
+                if k == 1:
+                    return min(nums1[index1], nums2[index2])
+
+                # 正常情况
+                newIndex1 = min(index1 + k // 2 - 1, m - 1)
+                newIndex2 = min(index2 + k // 2 - 1, n - 1)
+
+                pivot1, pivot2 = nums1[newIndex1], nums2[newIndex2]
+
+                # i = newIndex1
+                # j = newIndex2
+                # print('')
+                # print('nums1 index: ' + str(i))
+                # print(str(nums1[(i - 10):i]) + ' - ' + str(nums1[i:(i + 10)]))
+                #
+                # print('nums2 index: ' + str(j))
+                # print(str(nums2[(j - 10):j]) + ' - ' + str(nums2[j:(j + 10)]))
+                #
+                # left = nums1[:i] + nums2[:j]
+                # right = nums1[i:] + nums2[j:]
+                # print('left  len: ' + str(len(left)) + ' - ...' + str(sorted(left)[-10:]))
+                # print('right len: ' + str(len(right)) + ' - ' + str(sorted(right)[:10]) + '...')
+
+                if pivot1 <= pivot2:
+                    k -= newIndex1 - index1 + 1
+                    index1 = newIndex1 + 1
+                else:
+                    k -= newIndex2 - index2 + 1
+                    index2 = newIndex2 + 1
+
+        m, n = len(nums1), len(nums2)
+        totalLength = m + n
+        if totalLength % 2 == 1:
+            return getKthElement((totalLength + 1) // 2)
+        else:
+            return (getKthElement(totalLength // 2) + getKthElement(totalLength // 2 + 1)) / 2
 
 
 def main():
     test_case_list = [
-        {
-            'test_args': {'nums1': [3], 'nums2': [-2, -1]},
-            'expect_val': {'ret_val': -1},
-            'comment': '负数'
-        },
-        {
-            'test_args': {'nums1': [], 'nums2': [1]},
-            'expect_val': {'ret_val': 1},
-            'comment': '空集'
-        },
-
         {
             'test_args': {
                 'nums1': [103, 360, 400, 444, 448, 484, 492, 598, 626, 661, 688, 745, 759, 769, 816, 859, 871, 1003,
@@ -143,6 +195,16 @@ def main():
             'comment': '长'
         },
         {
+            'test_args': {'nums1': [3], 'nums2': [-2, -1]},
+            'expect_val': {'ret_val': -1},
+            'comment': '负数'
+        },
+        {
+            'test_args': {'nums1': [], 'nums2': [1]},
+            'expect_val': {'ret_val': 1},
+            'comment': '空集'
+        },
+        {
             'test_args': {'nums1': [1, 2, 3, 7, 8], 'nums2': [4, 5, 6, 9, 10]},
             'expect_val': {'ret_val': 5.5},
             'comment': '奇数奇数'
@@ -195,21 +257,9 @@ def main():
         },
     ]
 
-    instance_list = [Api(), BinaryCut(), LeetCode()]
-
-    test_list = []
-
+    ins = LeetCode()
     for t in test_case_list:
-        for ins in instance_list:
-            c = Compare(t['comment'])
-            c.clazz = type(ins).__name__
-            c.time_cost = ins.test(**t)
-            test_list.append(c)
-
-    test_list.sort(key=lambda compare: compare.time_cost)
-
-    for one in test_list:
-        print(one)
+        ins.test(**t)
 
 
 if __name__ == "__main__":
